@@ -9,19 +9,6 @@ Here is an explanation of how it works (It is oversimplified, but the main point
 
 TileFlow uses a completely different way to run LLMs, instead of loading the entire model into VRAM and only grabbbing a certain chunk of it (tensors) from the VRAM, we send the chunks (split tensors) directly from storage intelligently, so that it appears as if its doing the same thing as before, basically, we are using storage as a huge version of VRAM, meaning that we can finally run the model!
 
-
-### Architecture
-
-```
-tileflow/
-├── cli.py              # CLI commands
-├── autotune.py         # Hardware benchmarking & tuning
-├── scheduler.py        # NVMe→GPU tile prefetch scheduler
-├── model_store.py      # Hugging Face model management
-├── backend_ktransformers.py  # ktransformers integration
-└── ...
-```
-
 ## How use
 
 - Get .exe from releases
