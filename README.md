@@ -2,7 +2,7 @@
 The first inference pipeline that achieves near-zero performance loss from tensor splitting, allowing even mid-range GPUs to run frontier LLMs.
 
 ### Why we need TileFLow
-Right now, AI inference apps (like Ollama and LMStudio) load the entire model into VRAM before running anything. For high-end datacentres this is fine because there is lots of VRAM in datacentre GPUS. For consumer hardware, this is not possible for most modern LLMs, which can require up to terabytes.
+Right now, AI inference apps (like Ollama and LM Studio) load the entire model into VRAM before running anything. For high-end datacentres this is fine because there is lots of VRAM in datacentre GPUS. For consumer hardware, this is not possible for most modern LLMs, which can require up to terabytes.
 
 ### How it works
 Here is an explanation of how it works (It is oversimplified, but the main points are correct):
