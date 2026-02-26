@@ -25,6 +25,6 @@ tileflow/
 ## How use
 
 - Get .exe from releases
-- Go on [Huggingface](huggingface.co) and find the model you want to use
+- Go on [Huggingface](https://huggingface.co) and find the model you want to use
 - Double click exe and type in ```tileflow run <model``` (so if you want to run GPT 2, you would do ```tileflow run openai-community/gpt2```
 
