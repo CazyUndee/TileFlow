@@ -1,0 +1,175 @@
+Metadata-Version: 2.4
+Name: tileflow
+Version: 0.1.0
+Summary: Rolling NVMe -> GPU streaming runtime scaffolding for MoE inference.
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.26
+Requires-Dist: huggingface_hub>=0.30
+Provides-Extra: cuda
+Requires-Dist: torch>=2.4; extra == "cuda"
+Provides-Extra: desktop
+Requires-Dist: pywebview>=5.0; extra == "desktop"
+
+# TileFlow
+
+TileFlow now provides an Ollama-like local UX on top of a `ktransformers` backend, with startup auto-tuning for rolling weight streaming.
+It supports either:
+- installed `ktransformers` (`pip install ktransformers`)
+- a local fork checkout path (no separate wheel bundling required)
+- a desktop WebView frontend (`tileflow-desktop`)
+
+## Install
+
+```bash
+pip install -e .
+pip install ktransformers
+```
+
+For desktop mode:
+
+```bash
+pip install -e ".[desktop]"
+```
+
+Or point TileFlow at your local fork:
+
+```bash
+tileflow backend set-path /path/to/ktransformers
+tileflow backend show
+```
+
+## CLI
+
+### 1) Pull from Hugging Face (storage-safe default)
+
+```bash
+tileflow pull bartowski/gpt-oss-20b-GGUF
+```
+
+By default `pull` picks the smallest GGUF file (plus tokenizer/config files), instead of downloading every GGUF quant.
+Useful options:
+
+```bash
+tileflow pull <repo> --gguf-pattern "*Q4_K_M.gguf"
+tileflow pull <repo> --all-gguf
+tileflow pull <repo> --no-gguf
+```
+
+### 2) List local models
+
+```bash
+tileflow list
+```
+
+Rename or remove aliases:
+
+```bash
+tileflow rename old_alias new_alias
+tileflow rm old_alias --delete-files
+```
+
+### 3) Tune runtime
+
+```bash
+tileflow tune
+```
+
+### 4) Run interactive chat
+
+```bash
+tileflow run gpt-oss
+```
+
+Also supports direct model path or HF model id (decoder models supported by your `ktransformers` build):
+
+```bash
+tileflow run --model-path /models/Meta-Llama-3-8B
+tileflow run --hf-model-id meta-llama/Meta-Llama-3-8B-Instruct
+```
+
+### 5) One-shot prompt
+
+```bash
+tileflow run gpt-oss --prompt "Write a two-line haiku about GPUs."
+```
+
+### 6) Serve API
+
+```bash
+tileflow serve gpt-oss --host 127.0.0.1 --port 11434
+```
+
+You can pass backend-specific flags through:
+
+```bash
+tileflow serve --hf-model-id meta-llama/Meta-Llama-3-8B-Instruct --backend-arg --trust-remote-code
+```
+
+TileFlow stores pulled models and aliases in:
+- `~/.tileflow/models/`
+- `~/.tileflow/models.json`
+
+## Rolling-weights integration
+
+On `run` and `serve`, TileFlow performs startup tuning and exports:
+- `TILEFLOW_S_OPT_MB`
+- `TILEFLOW_PREFETCH_DEPTH`
+
+Those values are intended for patched ktransformers prefetch/offload logic (rolling expert tiles). The current repo provides the tuner + scheduler scaffolding; actual kernel/offload hooks belong in the ktransformers runtime.
+
+## Notes
+
+- If `ktransformers` is not installed, `run`/`serve` will error with install guidance.
+- Fork mode: `--ktransformers-path` or `tileflow backend set-path` prepends your fork to `PYTHONPATH`.
+- `pull` uses `huggingface_hub.snapshot_download`.
+
+## Desktop app (static frontend + WebView bridge)
+
+Launch:
+
+```bash
+tileflow-desktop
+```
+
+Or:
+
+```bash
+python -m tileflow.desktop
+```
+
+The desktop UI is static HTML/CSS/JS in `tileflow/frontend/` and calls Python backend methods through `pywebview` JS API.
+
+### Windows standalone build (PyInstaller)
+
+Example command:
+
+```bash
+pyinstaller --noconfirm --onefile --name tileflow-desktop --add-data "tileflow/frontend;tileflow/frontend" tileflow/desktop.py
+```
+
+If you want your backend dependencies included, install them into the build environment before running PyInstaller.
+
+### EXE + `sr/` release layout
+
+If you want a distribution folder with exactly:
+
+- `TileFlow.exe`
+- `sr/` (runtime + bundled source payload)
+
+Run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build_release.ps1
+```
+
+For faster repeat builds (reuse the isolated build venv):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build_release.ps1 -ReuseBuildVenv
+```
+
+Output is generated in:
+
+- `release/TileFlow.exe`
+- `release/sr/`

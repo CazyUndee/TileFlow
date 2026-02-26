@@ -1,0 +1,8 @@
+numpy>=1.26
+huggingface_hub>=0.30
+
+[cuda]
+torch>=2.4
+
+[desktop]
+pywebview>=5.0

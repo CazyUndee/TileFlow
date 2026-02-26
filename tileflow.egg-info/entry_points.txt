@@ -1,0 +1,3 @@
+[console_scripts]
+tileflow = tileflow.cli:main
+tileflow-desktop = tileflow.desktop:main

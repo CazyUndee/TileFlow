@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tileflow"
+version = "0.1.0"
+description = "Rolling NVMe -> GPU streaming runtime scaffolding for MoE inference."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "huggingface_hub>=0.30",
+  "clui>=0.5",
+]
+
+[project.optional-dependencies]
+cuda = [
+  "torch>=2.4",
+]
+
+[project.scripts]
+tileflow = "tileflow.cli:main"
+
+[tool.setuptools]
+packages = ["tileflow"]
