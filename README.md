@@ -1,5 +1,5 @@
 # TileFlow
-An efficient solution to running large language models effectively on consumer hardware.
+The first inference pipeline that achieves near zero performance loss that allows even mid range gpus to run frontier LLMs.
 
 ### Why we need TileFLow
 Right now, AI inference apps (like Ollama and LMStudio) load the entire model into VRAM before running anything. For high-end datacentres this is fine because there is lots of VRAM in datacentre GPUS. For consumer hardware, this is not possible for most modern LLMs, which can require up to terabytes.
@@ -26,5 +26,5 @@ tileflow/
 
 - Get .exe from releases
 - Go on [Huggingface](https://huggingface.co) and find the model you want to use
-- Double click exe and type in ```tileflow run <model``` (so if you want to run GPT 2, you would do ```tileflow run openai-community/gpt2```
+- Double click exe and type in ```tileflow run <model``` (so if you want to run GPT 2, you would do ```tileflow run openai-community/gpt2>```
 
